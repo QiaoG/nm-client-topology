@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+箭头
+@author GQ
+create time:2014-2-20- 13:32:42
+-->
+<s:Path xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		xmlns:s="library://ns.adobe.com/flex/spark" 
+		xmlns:mx="library://ns.adobe.com/flex/mx"
+		data="{model.pathData}"
+		visible="{model.visible}" stroke="{model.borderStoke}">
+	<fx:Script>
+		<![CDATA[
+			[Bindable]
+			public var model:ConnectionPM;
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+	</fx:Declarations>
+	<s:fill>
+		<s:SolidColor color="{model.arrowColor}"/>
+	</s:fill>	
+</s:Path>

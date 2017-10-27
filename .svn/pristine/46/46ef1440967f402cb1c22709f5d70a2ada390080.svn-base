@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+鹰眼
+@author GQ
+create time:2013-7-11- 9:32:37
+-->
+<s:BorderContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
+				   xmlns:s="library://ns.adobe.com/flex/spark" 
+				   xmlns:sp="http://www.spicefactory.org/parsley"
+				   xmlns:mx="library://ns.adobe.com/flex/mx"
+				   borderColor="#dddddd" width="{model.width}" height="{model.height}"
+				   backgroundColor="#f0f0f0" 
+				   creationComplete="bordercontainer1_creationCompleteHandler(event)">
+	<fx:Script>
+		<![CDATA[
+			import mx.events.FlexEvent;
+			
+			[Bindable]
+			public var model:HawkeyeViewerPM;
+			
+			protected function bordercontainer1_creationCompleteHandler(event:FlexEvent):void
+			{
+				model.canvas = this;
+			}
+			
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<sp:Configure/>
+		<sp:FastInject property="model" type="{HawkeyeViewerPM}"/>
+	</fx:Declarations>
+	<s:Rect id="rect" x="{model.displayRectangleX}" y="{model.displayRectangleY}"
+					   width="{model.displayRectangleW}" height="{model.displayRectangleH}" stroke="{model.borderStoke}"
+					   />
+</s:BorderContainer>

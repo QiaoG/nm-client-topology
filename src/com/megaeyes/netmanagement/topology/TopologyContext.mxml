@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+@author:GQ 
+create time:2013-8-1- 11:24:53
+-->
+<parsley:Objects xmlns:fx="http://ns.adobe.com/mxml/2009" 
+				 xmlns:parsley="http://www.spicefactory.org/parsley"
+				 xmlns:s="library://ns.adobe.com/flex/spark" 
+				 xmlns:mx="library://ns.adobe.com/flex/mx">
+	<fx:Script>
+		<![CDATA[
+			import com.megaeyes.networkmanagement.api.application.HttpXmlServiceCommand;
+			import com.megaeyes.networkmanagement.api.application.WebServiceRequestCommand;
+			import com.megaeyes.netmanagement.topology.domain.CustomDevicesDM;
+			import com.megaeyes.netmanagement.topology.domain.DevicesDM;
+			import com.megaeyes.netmanagement.topology.domain.DevicesSearchDM;
+			import com.megaeyes.netmanagement.topology.domain.DivisionDevicesDM;
+			import com.megaeyes.netmanagement.topology.domain.PartDevicesDM;
+			import com.megaeyes.netmanagement.topology.domain.PlatformDM;
+			import com.megaeyes.netmanagement.topology.domain.PlatformDevicesDM;
+			import com.megaeyes.netmanagement.topology.domain.TopologyLocationDM;
+			import com.megaeyes.netmanagement.topology.infrastructure.ImageUtil;
+			import com.megaeyes.netmanagement.topology.presentation.HawkeyeViewerPM;
+			import com.megaeyes.netmanagement.topology.presentation.TopologyCanvasPM;
+			import com.megaeyes.netmanagement.topology.presentation.TopologyModel;
+			import com.megaeyes.netmanagement.topology.presentation.TopologyViewerPM;
+			import com.megaeyes.netmanagement.topology.presentation.TopologyViewersPM;
+			import com.megaeyes.netmanagement.topology.presentation.node.NodePM;
+			import com.megaeyes.networkmanagement.api.application.command.base.CommandBase;
+			import com.megaeyes.networkmanagement.api.utils.DeviceUtils;
+
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<!-- Presentation -->
+		<parsley:DynamicObject type="{TopologyViewerPM}"/>
+		<parsley:DynamicObject type="{HawkeyeViewerPM}"/>
+		<parsley:DynamicObject type="{TopologyCanvasPM}"/>
+		<!--<parsley:DynamicObject type="{TopologyDM}"/>-->
+		<parsley:Object type="{TopologyViewersPM}"/>
+		
+		<!-- infrastructure -->
+		<parsley:Object type="{ImageUtil}"/>
+		<parsley:Object type="{DeviceUtils}"/>
+		
+		<!-- Domain -->
+		<parsley:Object type="{PlatformDevicesDM}"/>
+		<parsley:Object type="{PartDevicesDM}"/>
+		<parsley:Object type="{PlatformDM}"/>
+		<parsley:Object type="{TopologyLocationDM}"/>
+		<parsley:Object type="{DivisionDevicesDM}"/>
+		<parsley:Object type="{CustomDevicesDM}"/>
+		<parsley:Object type="{DevicesSearchDM}"/>
+		
+		<!-- Application -->
+		<parsley:DynamicCommand type="{WebServiceRequestCommand}" selector="find_platforms" >
+			<parsley:Property name="server" idRef="DomainService_api" />
+			<parsley:Property name="serviceMethod" value="findPlatform" />
+		</parsley:DynamicCommand>
+		<parsley:DynamicCommand type="{WebServiceRequestCommand}" selector="find_devices_by_platform" >
+			<parsley:Property name="server" idRef="DeviceService_api" />
+			<parsley:Property name="serviceMethod" value="findDevices" />
+		</parsley:DynamicCommand>
+		<parsley:DynamicCommand type="{WebServiceRequestCommand}" selector="find_devices_by_division" >
+			<parsley:Property name="server" idRef="GroupService_api" />
+			<parsley:Property name="serviceMethod" value="findDivisionDevice" />
+		</parsley:DynamicCommand>
+		<parsley:DynamicCommand type="{WebServiceRequestCommand}" selector="get_device_by_id" >
+			<parsley:Property name="server" idRef="DeviceService_api" />
+			<parsley:Property name="serviceMethod" value="findDevices" />
+		</parsley:DynamicCommand>
+		<parsley:DynamicCommand type="{WebServiceRequestCommand}" selector="get_device_by_id_2" >
+			<parsley:Property name="server" idRef="DeviceService_api" />
+			<parsley:Property name="serviceMethod" value="findDevices" />
+		</parsley:DynamicCommand>
+		<parsley:DynamicCommand type="{WebServiceRequestCommand}" selector="get_device_by_id_custom" >
+			<parsley:Property name="server" idRef="DeviceService_api" />
+			<parsley:Property name="serviceMethod" value="findDevices" />
+		</parsley:DynamicCommand>
+		<parsley:DynamicCommand type="{WebServiceRequestCommand}" selector="find_children_devices_by_id" >
+			<parsley:Property name="server" idRef="DeviceService_api" />
+			<parsley:Property name="serviceMethod" value="findChilds" />
+		</parsley:DynamicCommand>
+		<parsley:DynamicCommand type="{HttpXmlServiceCommand}" scope="local" selector="topology_location_info_xml">
+			<parsley:Property name="resultFormat" value="text"/>
+		</parsley:DynamicCommand>
+		<parsley:DynamicCommand type="{CommandBase}" selector="custom_topology_devices" >
+			<parsley:Property name="server" idRef="DeviceService_api" />
+			<parsley:Property name="countMethod" value="countDevices" />
+			<parsley:Property name="serviceMethod" value="findDevices" />
+		</parsley:DynamicCommand>
+	</fx:Declarations>
+</parsley:Objects>

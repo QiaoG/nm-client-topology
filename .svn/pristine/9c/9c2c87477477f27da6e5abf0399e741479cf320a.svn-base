@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+@author GQ
+create time:2013-8-6- 9:06:54
+-->
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			  xmlns:s="library://ns.adobe.com/flex/spark" 
+			  xmlns:mx="library://ns.adobe.com/flex/mx"
+			  xmlns:sp="http://www.spicefactory.org/parsley"
+			  xmlns:cairngorm="http://ns.adobe.com/cairngorm"
+			  xmlns:container="com.network.components.container.*"
+			  xmlns:cps="com.megaeyes.networkmanagement.api.view.cps.*"
+			  xmlns:win = "com.megaeyes.networkmanagement.api.view.win.*"
+			  xmlns:tree="com.megaeyes.networkmanagement.api.view.tree.*"
+			  xmlns:group = "com.megaeyes.networkmanagement.api.view.tree.group.*"
+			  creationComplete="group1_creationCompleteHandler(event)" xmlns:presentation="com.megaeyes.netmanagement.topology.presentation.*">
+	<fx:Script>
+		<![CDATA[
+			import com.megaeyes.netmanagement.topology.infrastructure.event.CustomEvent;
+			import com.megaeyes.networkmanagement.api.managers.ConstInfoManager;
+			import com.megaeyes.networkmanagement.api.utils.AlertUtil;
+			
+			import mx.controls.Alert;
+			import mx.events.CloseEvent;
+			import mx.events.FlexEvent;
+			
+			import org.spicefactory.parsley.core.context.Context;
+			
+			import spark.components.NavigatorContent;
+			
+			[Inject]
+			[Bindable]
+			public var context:Context;
+			
+			[Bindable]
+			public var model:TopologyViewersPM;
+			
+			[Inject]
+			public function injectPM(pm:TopologyViewersPM):void
+			{
+				model = pm;
+				model.addEventListener("add_viewer",addViewerHanlder);
+			}
+			
+			public function addViewerHanlder(event:CustomEvent):void
+			{
+				
+				var c:NavigatorContent = new NavigatorContent();
+				var viewer:TopologyViewer = new TopologyViewer();
+				viewer.parentN = c;
+				viewer.percentHeight = 100;
+				viewer.percentWidth = 100;
+				viewer.parameter = event.data;
+				viewer.topologyInfo = model.getSaveTopologyInfo(event.data.id);
+				c.addElement(viewer);
+				c.label = event.data.name;
+				viewer.addEventListener("create_viewer_complement",addOneViewerComplement);
+				viewers.addElement(c);
+			}
+			
+			public function delViewerHanlder():void
+			{
+				AlertUtil.okLabel="确定";
+				AlertUtil.cancelLabel="取消";
+				AlertUtil.show("确认关闭吗？","提示",AlertUtil.OK|Alert.CANCEL,null,doSave,null,AlertUtil.CANCEL);
+			}
+			
+			private function doSave(event:CloseEvent):void
+			{
+				if(event.detail==Alert.OK){
+					var sel:int = model.selViewerIndex;
+					model.doRemoveCurrentViewer();
+					viewers.removeElementAt(sel);
+				}
+			}
+			
+			private function addOneViewerComplement(event:Event):void
+			{
+				var viewer:TopologyViewer = event.target as TopologyViewer;
+				model.addOneViewerPM(viewer.model);
+				if(devices && devices.domain && devices.domain.items==null)
+					devices.domain.queryList();
+			}
+			
+			protected function group1_creationCompleteHandler(event:FlexEvent):void
+			{
+				if(ConstInfoManager.topology_device_id){
+					model.addDeviceTopology(ConstInfoManager.topology_device_id);
+					ConstInfoManager.topology_device_id = null;
+				}
+			}
+			
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<sp:Configure/>
+		<cairngorm:PopUpWrapper id="groupPopup"
+								open="{ model.showCustomViewerPopup}"
+								closed="{model.closeAddCustomeViewerPopup()}"
+								popup="com.megaeyes.netmanagement.topology.presentation.AddCustomViewerPopup"
+								modal="true">
+			<cairngorm:behaviors>
+				<cairngorm:AddPopUpToParsleyContext context="{ context }"/>
+				<cairngorm:KeepCenteredBehavior/>
+				<cairngorm:ZoomAndFadeBehavior/>
+			</cairngorm:behaviors>
+		</cairngorm:PopUpWrapper>
+	</fx:Declarations>
+	<s:HGroup width="100%" height="100%" gap="0">
+		<s:BorderContainer id="tree" width="190" height="100%" styleName="borderColor1_sys">
+			<s:layout>
+				<s:VerticalLayout paddingLeft="1" paddingRight="-1" paddingTop="-1" gap="0" clipAndEnableScrolling="true"/>
+			</s:layout>
+			<s:Group width="100%" height="100%" clipAndEnableScrolling="true">
+				<s:BorderContainer  styleName = "normalBack_sys" height = "28" left="-1" right="-1" top="-1"/>
+				<mx:TabNavigator id="topls" left="-1" right="-1" bottom="-1" top="2" selectedIndex="@{model.selIndex}">
+					<s:NavigatorContent width="100%" height="100%" 
+										label="平台">
+						<tree:LocalTreeBase width="100%" height="100%" id="pt" doubleClickEnabled="true" enabled="{!model.lock}"
+											dataProvider="{model.platformsXML}" labelField="@name" showRoot="false"  borderVisible="false"
+											itemDoubleClick="{model.platformChangeHandler(pt.selectedItem as XML)}"/>
+					</s:NavigatorContent>
+					<s:NavigatorContent width="100%" height="100%" 
+										label="分组">
+						<group:GroupTree id = "grdt" doubleClickEnabled="true"
+										 width = "100%"
+										 height = "100%"
+										 contentBackgroundAlpha = "0"
+										 borderVisible = "false"
+										 itemDoubleClick="{model.divisionChangeHanlder(grdt.selectedItem as XML)}"/>
+					</s:NavigatorContent>
+					<s:NavigatorContent width="100%" height="100%" 
+										label="设备">
+						<presentation:DevicesSearchPanel id="devices" width="100%" height="100%"/>
+					</s:NavigatorContent>
+					<s:NavigatorContent width="100%" height="100%" 
+										label="收藏">
+						<s:VGroup width="100%" height="100%">
+							<s:HGroup width="100%" height="28" horizontalAlign="right" verticalAlign="middle" paddingRight="3">
+								<s:Button label="删 除" minWidth="60" styleName="topControlBtnRigSty" click="{model.deleSavedTopologysItem(tlt.selectedItem as XML)}"
+										  enabled="{model.selSavedTopologysItem}"/>
+							</s:HGroup>
+							<tree:LocalTreeBase width="100%" height="100%" id="tlt" doubleClickEnabled="true" enabled="{!model.lock}"
+												dataProvider="{model.topologyLocationDM.dataXML}" labelField="@name" showRoot="false" 
+												change="{model.selSavedTopologysChangeHandler(tlt.selectedItem as XML)}"
+												itemDoubleClick="{model.openSavedTopologyHandler(tlt.selectedItem as XML)}"/>
+						</s:VGroup>
+					</s:NavigatorContent>
+				</mx:TabNavigator>
+			</s:Group>
+		</s:BorderContainer>
+		<cps:StretchableBar  control="{tree}"/>
+		<s:VGroup width="100%" height="100%" gap="-1">
+			<s:Group height="30" width="100%">
+				<s:BorderContainer styleName = "normalBack_sys" height = "100%" width="100%"/>
+				<s:HGroup left="10" right="10" gap="-1" width="100%" height="100%" verticalAlign="middle">
+					<s:Button label="自定义2" minWidth="60" styleName="topControlBtnRigSty" click="{model.showCustomViewerPopupF()}"/>
+					<s:Button label="自动布局" minWidth="60" styleName="topControlBtnSty" click="{model.autoLayout()}"
+							  enabled="{model.currentFocusViewer!=null&amp;&amp;model.currentFocusViewer.type!='custom'}"/>
+					<s:Button label="保存布局" minWidth="60" styleName="topControlBtnRigSty" click="{model.saveTopologysInfo()}"
+							  enabled="{model.currentFocusViewer!=null}"/>
+					<s:Button label="关闭" minWidth="60" styleName="topControlBtnRigSty" click="{delViewerHanlder()}" enabled="{model.currentFocusViewer!=null}"/>
+					<s:Spacer width="10"/>
+					<s:Button label="撤销" minWidth="50" styleName="topControlBtnRigSty" click="{model.undo()}"
+							  toolTip="{model.currentFocusViewer.commandStack.lastUndoCommandLabel}"
+							  enabled="{model.currentFocusViewer!=null &amp;&amp; model.currentFocusViewer.commandStack.undoable.length&gt;0}"/>
+					<s:Button label="恢复" minWidth="50" styleName="topControlBtnRigSty" click="{model.redo()}"
+							  toolTip="{model.currentFocusViewer.commandStack.lastRedoCommandLabel}"
+							  enabled="{model.currentFocusViewer!=null&amp;&amp; model.currentFocusViewer.commandStack.redoable.length&gt;0}"/>
+					<s:Spacer width="10"/>
+					<!--<s:Button label="刷新设备" minWidth="60" styleName="topControlBtnRigSty" click="{model.refreshDevice()}"
+							  visible = "{model.currentFocusViewer!=null &amp;&amp; model.currentFocusViewer.model.focusNode!=null}"/>-->
+				</s:HGroup>
+			</s:Group>	
+			<s:BorderContainer styleName="borderColor1_sys" width="100%" height="100%">
+				<s:Group width="100%" height="100%" clipAndEnableScrolling="true">
+					<s:BorderContainer  styleName = "normalBack_sys" height = "28" left="-1" right="-1" top="-1"/>
+					<mx:TabNavigator id="viewers" left="-1" right="-1" bottom="-1" top="2"  selectedIndex="@{model.selViewerIndex}" change="{model.changeSelView()}"/>
+				</s:Group>
+			</s:BorderContainer>
+		</s:VGroup>
+	</s:HGroup>
+	<win:Loading width = "100%"
+				 height = "100%"
+				 loadingFlag = "{model.lock}"/>
+</s:Group>

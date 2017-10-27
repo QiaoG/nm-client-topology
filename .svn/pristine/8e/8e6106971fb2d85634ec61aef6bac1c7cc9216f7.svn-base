@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+绘制图形的画布
+@author GQ
+create time:2013-7-11- 9:50:34
+-->
+<s:Scroller xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			xmlns:s="library://ns.adobe.com/flex/spark" 
+			xmlns:sp="http://www.spicefactory.org/parsley"
+			xmlns:mx="library://ns.adobe.com/flex/mx" horizontalScrollPolicy="off" verticalScrollPolicy="off"
+			creationComplete="scroller1_creationCompleteHandler(event)"
+			xmlns:node="com.megaeyes.netmanagement.topology.presentation.node.*"
+			resize="scroller1_resizeHandler(event)">
+	<fx:Script>
+		<![CDATA[
+			import com.megaeyes.netmanagement.topology.domain.vo.TopologyDevice;
+			import com.megaeyes.netmanagement.topology.presentation.node.Node;
+			import com.megaeyes.netmanagement.topology.presentation.node.NodePM;
+			
+			import flash.utils.setTimeout;
+			
+			import mx.controls.Alert;
+			import mx.events.FlexEvent;
+			import mx.events.ResizeEvent;
+			
+			import spark.components.Button;
+			
+			[Bindable]
+			public var model:TopologyCanvasPM;
+			
+			[Bindable]
+			private var pm:NodePM;
+			
+			private var init:Boolean = false;
+			
+			protected function scroller1_creationCompleteHandler(event:FlexEvent):void
+			{
+				model.canvas = canvas;
+				model.initSize(this.width,this.height);
+				var po:Point = this.localToGlobal(new Point(0,0));
+				model.initOriginalLocation(po.x,po.y);
+				init = true;
+			}
+			
+			protected function scroller1_resizeHandler(event:ResizeEvent):void
+			{
+				if(init){
+					var po:Point = this.localToGlobal(new Point(0,0));
+					model.initOriginalLocation(po.x,po.y);
+					model.changeDisplaySize(this.width,this.height);
+				}
+			}
+			
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<sp:Configure/>
+		<sp:FastInject property="model" type="{TopologyCanvasPM}"/>
+	</fx:Declarations>
+	<s:VGroup paddingBottom="0" paddingLeft="0" paddingRight="0" paddingTop="0">
+		<s:BorderContainer id="canvas" width="{model.width}" height="{model.height}" borderColor="red"
+						   dragEnter="model.dragEnterHandler(event)"
+						   dragOver="model.dragOverHandler(event)"
+						   dragDrop="model.dragDropHandler(event)"
+						   dragExit="model.dragExitHandler(event)">
+		</s:BorderContainer>
+	</s:VGroup>
+</s:Scroller>

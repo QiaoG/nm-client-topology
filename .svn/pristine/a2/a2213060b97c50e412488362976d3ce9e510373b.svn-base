@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+@author GQ
+create time:2013-7-18- 16:28:15
+-->
+<s:BorderContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
+				   xmlns:s="library://ns.adobe.com/flex/spark" 
+				   xmlns:mx="library://ns.adobe.com/flex/mx"
+				   xmlns:sp="http://www.spicefactory.org/parsley"
+				   x="{model.x}" y="{model.y}" width="{model.width}" height="{model.height}"
+				   visible="{model.visible}"
+				   borderVisible="{model.borderVisible}" borderColor="{model.borderColor}" borderAlpha="{model.borderAlpha}">
+	<fx:Script>
+		<![CDATA[
+			import com.megaeyes.netmanagement.topology.domain.vo.TopologyDevice;
+			import com.megaeyes.netmanagement.topology.infrastructure.ImageUtil;
+			import com.megaeyes.networkmanagement.api.domain.vo.Device;
+			import com.megaeyes.networkmanagement.api.domain.vo.OrganVO;
+			
+			import mx.events.FlexEvent;
+			
+			[Bindable]
+			public var model:NodePM;
+			
+			[Inject]
+			[Bindable]
+			public var images:ImageUtil;
+			
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<sp:Configure/>
+	</fx:Declarations>
+	<s:layout>
+		<s:VerticalLayout gap="0" paddingBottom="1"/>
+	</s:layout>
+	<s:BorderContainer width="78" height="20" borderVisible="false" click="{model.focusDevice = model.data as TopologyDevice;children.selectedIndex=-1}"
+					   backgroundColor="{model.focus?0xffffff:0xffffff}">
+		<s:layout>
+			<s:HorizontalLayout paddingLeft="3" paddingRight="3" verticalAlign="middle" horizontalAlign="center"/>
+		</s:layout>
+		<s:Label text="{model.name}" fontWeight="{model.focus?'bold':'normal'}" fontSize="12" width="100%" height="100%" verticalAlign="middle" lineBreak="explicit" maxDisplayedLines="1"  
+				 toolTip="{model.data.tooltip}" color="{model.focus?0x0000ff:0x000000}"/>
+		<!--<s:Label text="{model.title}" fontSize="11"/>-->
+	</s:BorderContainer>
+	<!--s:Line width="100">
+		<s:stroke>
+			<s:SolidColorStroke color="0xdddddd" weight="1" caps="square"/>
+		</s:stroke>
+	</s:Line>
+	<s:Spacer height="3"/-->
+	<s:HGroup width="100%" height="44" paddingLeft="2" gap="0">
+		<s:Image source="{model.image}" height="42" width="42" toolTip="{model.title}"/>
+		<s:Spacer width="10"/>
+		<s:Image source="{model.stateImage}" width="16"
+				 toolTip="{model.data.onLine?(model.data.currentStatus==4?'正常':(model.data.currentStatus==5?'严重告警':(model.data.currentStatus==6?'主要告警':'警告告警'))):'不在线'}"/>
+	</s:HGroup>
+	<s:List width="100%" height="{model.subListHeight}" id="children" dataProvider="{model.data.subChildren}" borderVisible="false"
+			change="{model.focusDevice = children.selectedItem as TopologyDevice}">
+		<s:layout>
+			<s:TileLayout requestedColumnCount="1" paddingTop="1" paddingBottom="0" rowHeight="24"/>
+		</s:layout>
+		<s:itemRenderer>
+			<fx:Component>
+				<s:ItemRenderer>
+					<s:BorderContainer borderVisible="false" width="100" height="25" backgroundColor="#eeeeee">
+						<s:layout>
+							<s:HorizontalLayout horizontalAlign="left" verticalAlign="middle" paddingLeft="3" paddingRight="2"/>
+						</s:layout>
+						<s:Image source="{data.onLine?(data.currentStatus == 4 ?outerDocument.images.OK:(data.currentStatus==5?outerDocument.images.PRIMARY:(data.currentStatus==6?outerDocument.images.MAIN:outerDocument.images.WARNING))):outerDocument.images.OUTLINE}"
+								 toolTip="{data.onLine?'设备在线':'设备不在线'}"/>
+						<s:Label text="{data.displayName}" fontSize="11" width="100%" height="100%" verticalAlign="middle" lineBreak="explicit" maxDisplayedLines="1"
+									 toolTip="{data.deviceName}"/>
+					</s:BorderContainer>
+				</s:ItemRenderer>
+			</fx:Component>
+		</s:itemRenderer>
+	</s:List>
+	<s:Spacer height="100%"/>
+	<!--s:BorderContainer width="100" height="20" backgroundColor="{model.focus?0xa9b0f1:0xdddddd}" borderVisible="false"
+					   click="{model.focusDevice = model.data as TopologyDevice;children.selectedIndex=-1}">
+		<s:layout>
+			<s:HorizontalLayout verticalAlign="middle" horizontalAlign="center"/>
+		</s:layout>
+		<s:Label text="{model.title}" fontSize="11"/>
+	</s:BorderContainer-->
+</s:BorderContainer>

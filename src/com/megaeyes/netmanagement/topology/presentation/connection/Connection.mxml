@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+@author GQ
+create time:2013-7-31- 17:33:34
+-->
+<s:Line xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		xmlns:s="library://ns.adobe.com/flex/spark" 
+		xmlns:mx="library://ns.adobe.com/flex/mx"
+		xFrom="{model.fromX}" yFrom="{model.fromY}" xTo="{model.toX}" yTo="{model.toY}"
+		visible="{model.visible}" stroke="{model.borderStoke}">
+	<fx:Script>
+		<![CDATA[
+			import spark.primitives.Path;
+			
+			[Bindable]
+			public var model:ConnectionPM;
+			
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+	</fx:Declarations>
+	<!--<s:stroke>
+		<s:SolidColorStroke color="#bbbbbb" weight="1" caps="square"/>
+	</s:stroke>-->
+</s:Line>

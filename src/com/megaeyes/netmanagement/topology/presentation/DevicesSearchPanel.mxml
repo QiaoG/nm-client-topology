@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+@author GQ
+create time:2013-11-5- 14:50:11
+-->
+<s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		  xmlns:s="library://ns.adobe.com/flex/spark" 
+		  xmlns:mx="library://ns.adobe.com/flex/mx"
+		  xmlns:sp="http://www.spicefactory.org/parsley"
+		  xmlns:page="com.megaeyes.networkmanagement.api.view.page.*"
+		  xmlns:list = "com.network.components.list.*" xmlns:ns="http://www.spicefactory.org/parsley/pimento"
+		  gap="1">
+	<fx:Script>
+		<![CDATA[
+			import com.megaeyes.netmanagement.topology.domain.DevicesSearchDM;
+			import com.megaeyes.netmanagement.topology.infrastructure.ImageUtil;
+			import com.megaeyes.networkmanagement.api.domain.query.ReqDeviceQuery;
+			import com.megaeyes.networkmanagement.api.utils.DeviceUtils;
+			
+			public var model:TopologyViewerPM;
+			
+			[Inject]
+			[Bindable]
+			public var util:DeviceUtils;
+			
+			[Inject]
+			[Bindable]
+			public var domain:DevicesSearchDM;
+			
+			[Inject]
+			public var imags:ImageUtil;
+			
+			
+			private function deviceTypeSelectedChangeHandler(item:Object):void
+			{
+				ReqDeviceQuery(domain.query).deviceType = item.content;
+			}
+			
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<sp:Configure/>
+	</fx:Declarations>
+	<s:HGroup width="100%" height="26" verticalAlign="middle" horizontalAlign="left" paddingRight="3" paddingLeft="3">
+		<s:Label text="类型:"/>
+		<s:ComboBox id="cmb" width="100%" dataProvider="{util.deviceTypes}" selectedIndex="0"
+					change="{deviceTypeSelectedChangeHandler(cmb.selectedItem)}"/>
+		<s:Button label="查询" click="{domain.queryList()}" enabled="{!domain.isLoading}"/>
+	</s:HGroup>
+	<s:HGroup width="100%" height="26" verticalAlign="middle" horizontalAlign="left" paddingRight="3" paddingLeft="3">
+		<s:Label text="名称:"/>
+		<s:TextInput width="108" text="@{ReqDeviceQuery(domain.query).deviceName}" id="pr_name"
+					 restrict= "()_\-.a-zA-Z0-9\u4E00-\u9FA5" maxChars="50"/>
+	</s:HGroup>
+	<mx:DataGrid width="100%" height="100%" variableRowHeight="false" rowHeight="25" doubleClickEnabled="true" verticalGridLines="false"
+				 headerSeparatorSkin="mx.skins.ProgrammaticSkin"
+				dataProvider="{domain.items}" dragEnabled="true" horizontalScrollPolicy="auto" borderColor="#aaaaaa" >
+		<mx:columns>
+			<mx:DataGridColumn dataField="deviceName" headerText="设备名称" width="120" editable="false"/>
+			<mx:DataGridColumn dataField="deviceIp" headerText="IP" width="90" editable="false"/>
+			<mx:DataGridColumn dataField="deviceTypeName" headerText="类型" width="80" editable="false"/>
+			<mx:DataGridColumn dataField="deviceId" headerText="设备Id" width="260" editable="false"/>
+		</mx:columns>
+	</mx:DataGrid>
+	<s:BorderContainer width="100%" styleName="borderColor4_sys" >
+		<page:Page height = "30" isminn="true"
+				   horizontalCenter="0"  
+				   model="{domain}"/>
+	</s:BorderContainer>
+</s:VGroup>
